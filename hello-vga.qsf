@@ -431,3 +431,5 @@ set_location_assignment PIN_AA2 -to GPIO[35]
 set_global_assignment -name SDC_FILE "DE10_LITE clock assignments.sdc"
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name EDA_BOARD_DESIGN_TIMING_TOOL "<None>"
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT NONE -section_id eda_board_design_timing
