@@ -1,1 +1,10 @@
-/db
+*
+
+!*.qpf
+!*.qsf
+
+!*.sdc
+
+!*.vhd
+
+!README.md
