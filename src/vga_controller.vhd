@@ -53,6 +53,12 @@ architecture A of vga_controller is
         );
     end component;
 
+    -- constants
+    constant N_col : -- total number of columns in a row in a frame
+        integer := HORIZONTAL+H_FRONT_PORCH+H_SYNC_PULSE+H_BACK_PORCH;
+    constant N_row : -- total number of rows in a frame
+        integer := VERTICAL+V_FRONT_PORCH+V_SYNC_PULSE+V_BACK_PORCH;
+
     -- counter signals
     signal Q_col : std_logic_vector(9 downto 0) := (others => '0'); -- column
     signal Q_row : std_logic_vector(9 downto 0) := (others => '0'); -- row 
@@ -73,8 +79,17 @@ begin
 
     -- row clock generation process
     generate_row_clock : process(clk, Q_col)
+        variable res : std_logic := '0';
     begin
         -- the process
+        if (rising_edge(clk)) then
+            if (Q_col=(N_col-1)) then
+                res := '1';
+            else
+                res := '0';
+            end if;
+        end if;
+        row_clock <= res;
     end process;
 
     -- hsync generation process
