@@ -122,5 +122,46 @@ begin
     end process;
 
     -- hsync generation process
+    generate_hsync : process(clk, Q_col)
+        variable res : std_logic := '0';
+    begin
+        if (rising_edge(clk)) then
+            if (Q_col > N_col-H_BACK_PORCH-1) then
+                -- back porch
+                res := '1';
+            elsif (Q_col > HORIZONTAL+H_FRONT_PORCH-1) then
+                -- sync pulse
+                res := '0';
+            elsif (Q_col > HORIZONTAL-1) then
+                -- front porch
+                res := '1';
+            else
+                -- active video
+                res := '1';
+            end if;
+            HSYNC <= res and nreset;
+        end if;
+    end process;
+
     -- vsync generation process
+    generate_vsync : process(row_clock, Q_row)
+        variable res : std_logic := '0';
+    begin
+        if (rising_edge(clk)) then
+            if (Q_row > N_row-V_BACK_PORCH-1) then
+                -- back porch
+                res := '1';
+            elsif (Q_row > VERTICAL+V_FRONT_PORCH-1) then
+                -- sync pulse
+                res := '0';
+            elsif (Q_row > VERTICAL-1) then
+                -- front porch
+                res := '1';
+            else
+                -- active video
+                res := '1';
+            end if;
+            VSYNC <= res and nreset;
+        end if;
+    end process;
 end architecture A;
