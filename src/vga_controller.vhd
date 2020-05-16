@@ -79,11 +79,19 @@ architecture A of vga_controller is
     signal Q_row : std_logic_vector(row_counter_width-1 downto 0)
         := (others => '0'); -- row
 
-    -- counter resets;
+    -- counter resets active low;
     signal col_reset : std_logic;
     signal row_reset : std_logic;
 
     signal row_clock : std_logic; -- row clock
+
+    -- temporary color signals
+    signal RED_tmp   : std_logic_vector(COLOR_BITNESS-1 downto 0) := (others => '1');
+    signal GREEN_tmp : std_logic_vector(COLOR_BITNESS-1 downto 0) := (others => '1');
+    signal BLUE_tmp  : std_logic_vector(COLOR_BITNESS-1 downto 0) := (others => '1');
+
+    -- video blanking active high
+    signal video_blank : std_logic;
 begin
     -- column counter
     col_counter : nru_counter
@@ -104,6 +112,10 @@ begin
     -- row counter nreset
     row_reset <= '0' when Q_row >= N_row-1 or nreset='0' else
                  '1' ;
+
+    -- video blanking
+    video_blank <= '0' when Q_col < HORIZONTAL and Q_row < VERTICAL else
+                  '1' ;
 
     -- row clock generation process
     generate_row_clock : process(clk, Q_col)
@@ -163,4 +175,26 @@ begin
             VSYNC <= res or not nreset;
         end if;
     end process;
+
+    -- color output process
+    color_out : process(clk, video_blank, RED_tmp, GREEN_tmp, BLUE_tmp)
+        variable r, g, b : std_logic_vector(COLOR_BITNESS-1 downto 0);
+    begin
+        if (rising_edge(clk)) then
+            if (video_blank='0') then
+                r := RED_tmp;
+                g := GREEN_tmp;
+                b := BLUE_tmp;
+            else
+                r := (others => '0');
+                g := (others => '0');
+                b := (others => '0');
+            end if;
+            RED <= r;
+            GREEN <= g;
+            BLUE <= b;
+        end if;
+    end process;
+
+    -- color generation process
 end architecture A;
