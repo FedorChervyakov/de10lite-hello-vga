@@ -97,12 +97,11 @@ begin
 
     -- TODO: video memory
 
-
-    -- column counter reset
+    -- column counter nreset
     col_reset <= '0' when Q_col >= N_col-1 or nreset='0' else
                  '1' ;
 
-    -- row counter reset
+    -- row counter nreset
     row_reset <= '0' when Q_row >= N_row-1 or nreset='0' else
                  '1' ;
 
@@ -139,7 +138,7 @@ begin
                 -- active video
                 res := '1';
             end if;
-            HSYNC <= res and nreset;
+            HSYNC <= res or not nreset;
         end if;
     end process;
 
@@ -147,7 +146,7 @@ begin
     generate_vsync : process(row_clock, Q_row)
         variable res : std_logic := '0';
     begin
-        if (rising_edge(clk)) then
+        if (rising_edge(row_clock)) then
             if (Q_row > N_row-V_BACK_PORCH-1) then
                 -- back porch
                 res := '1';
@@ -161,7 +160,7 @@ begin
                 -- active video
                 res := '1';
             end if;
-            VSYNC <= res and nreset;
+            VSYNC <= res or not nreset;
         end if;
     end process;
 end architecture A;
