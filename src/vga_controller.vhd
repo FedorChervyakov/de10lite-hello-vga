@@ -17,9 +17,9 @@ entity vga_controller is
         H_BACK_PORCH  : integer := 48;
 
         -- VSYNC specs
-        V_FRONT_PORCH : integer := 11;
+        V_FRONT_PORCH : integer := 10;
         V_SYNC_PULSE  : integer := 2;
-        V_BACK_PORCH  : integer := 31;
+        V_BACK_PORCH  : integer := 33;
 
         -- color spec
         COLOR_BITNESS : integer := 4
