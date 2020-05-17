@@ -3,7 +3,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-use IEEE.math_real.all;
+use work.utils.all;
 
 entity vga_controller is
     generic (
@@ -54,24 +54,15 @@ architecture A of vga_controller is
         );
     end component;
 
-    -- calculate min counter width
-    function min_counter_width(N : integer)
-    return integer is
-        variable exponent : real;
-    begin
-        exponent := ceil(log2(real(N)));
-        return integer(exponent);
-    end min_counter_width;
-
     -- constants
     constant N_col : -- total number of columns in a row in a frame
         integer := HORIZONTAL+H_FRONT_PORCH+H_SYNC_PULSE+H_BACK_PORCH;
     constant N_row : -- total number of rows in a frame
         integer := VERTICAL+V_FRONT_PORCH+V_SYNC_PULSE+V_BACK_PORCH;
     constant col_counter_width : -- width of column counter
-        integer := min_counter_width(N_col);
+        integer := min_register_width(N_col);
     constant row_counter_width : -- width of row counter
-        integer := min_counter_width(N_row);
+        integer := min_register_width(N_row);
 
     -- counter signals
     signal Q_col : std_logic_vector(col_counter_width-1 downto 0)
