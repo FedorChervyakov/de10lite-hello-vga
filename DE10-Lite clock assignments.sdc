@@ -11,7 +11,7 @@ create_clock -period "50.0 MHz" [get_ports MAX10_CLK1_50]
 create_clock -period "50.0 MHz" [get_ports MAX10_CLK2_50]
 
 # vga_controller pixel clock
-create_clock -period "25.0 MHz" [get_ports clk]
+create_clock -period "25.0 MHz" [get_pins clk]
 
 #**************************************************************
 # Create Generated Clock
