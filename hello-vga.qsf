@@ -19,7 +19,7 @@
 #
 # Quartus Prime
 # Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
-# Date created = 03:35:24  мая 14, 2020
+# Date created = 09:07:20  мая 17, 2020
 #
 # -------------------------------------------------------------------------- #
 #
@@ -44,6 +44,15 @@ set_global_assignment -name ORIGINAL_QUARTUS_VERSION 19.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "08:45:45  мая 11, 2020"
 set_global_assignment -name LAST_QUARTUS_VERSION "19.1.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name NUM_PARALLEL_PROCESSORS 8
+set_global_assignment -name VHDL_FILE src/video_memory.vhd
+set_global_assignment -name VHDL_FILE src/utils.vhd
+set_global_assignment -name VHDL_FILE src/vga_controller.vhd
+set_global_assignment -name VHDL_FILE src/hello_vga.vhd
+set_global_assignment -name VHDL_FILE src/counter.vhd
+set_global_assignment -name VHDL_FILE tb/testbench_counter_4bit.vhd
+set_global_assignment -name SDC_FILE "DE10-Lite clock assignments.sdc"
+set_global_assignment -name QIP_FILE ip/intel/pll/pll.qip
 
 # Pin & Location Assignments
 # ==========================
@@ -237,11 +246,12 @@ set_location_assignment PIN_AA2 -to GPIO[35]
 # ==========================
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 
 # Analysis & Synthesis Assignments
 # ================================
 set_global_assignment -name FAMILY "MAX 10"
-set_global_assignment -name TOP_LEVEL_ENTITY vga_controller
+set_global_assignment -name TOP_LEVEL_ENTITY hello_vga
 
 # Fitter Assignments
 # ==================
@@ -255,7 +265,7 @@ set_global_assignment -name EDA_BOARD_DESIGN_TIMING_TOOL "<None>"
 
 # Power Estimation Assignments
 # ============================
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 
 # start EDA_TEST_BENCH_SETTINGS(testbench_counter_4bit)
@@ -263,21 +273,25 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 
 	# EDA Netlist Writer Assignments
 	# ==============================
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id testbench_counter_4bit
-set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "2200 ns" -section_id testbench_counter_4bit
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME testbench_counter_4bit -section_id testbench_counter_4bit
+	set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id testbench_counter_4bit
+	set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "2200 ns" -section_id testbench_counter_4bit
+	set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME testbench_counter_4bit -section_id testbench_counter_4bit
+	set_global_assignment -name EDA_TEST_BENCH_FILE tb/testbench_counter_4bit.vhd -section_id testbench_counter_4bit
 
 # end EDA_TEST_BENCH_SETTINGS(testbench_counter_4bit)
 # ---------------------------------------------------
 
-# start EDA_TOOL_SETTINGS(eda_board_design_boundary_scan)
+# start EDA_TEST_BENCH_SETTINGS(testbench_vga_controller)
 # -------------------------------------------------------
 
 	# EDA Netlist Writer Assignments
 	# ==============================
-	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
+	set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id testbench_vga_controller
+	set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "41921100 ns" -section_id testbench_vga_controller
+	set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME testbench_vga_controller -section_id testbench_vga_controller
+	set_global_assignment -name EDA_TEST_BENCH_FILE tb/testbench_vga_controller.vhd -section_id testbench_vga_controller
 
-# end EDA_TOOL_SETTINGS(eda_board_design_boundary_scan)
+# end EDA_TEST_BENCH_SETTINGS(testbench_vga_controller)
 # -----------------------------------------------------
 
 # start EDA_TOOL_SETTINGS(eda_simulation)
@@ -288,11 +302,22 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME testbench_counter_4bit -s
 	set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 	set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
 	set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH testbench_vga_controller -section_id eda_simulation
-set_global_assignment -name EDA_TEST_BENCH_NAME testbench_counter_4bit -section_id eda_simulation
+	set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH testbench_vga_controller -section_id eda_simulation
+	set_global_assignment -name EDA_TEST_BENCH_NAME testbench_counter_4bit -section_id eda_simulation
+	set_global_assignment -name EDA_TEST_BENCH_NAME testbench_vga_controller -section_id eda_simulation
 
 # end EDA_TOOL_SETTINGS(eda_simulation)
 # -------------------------------------
+
+# start EDA_TOOL_SETTINGS(eda_board_design_boundary_scan)
+# -------------------------------------------------------
+
+	# EDA Netlist Writer Assignments
+	# ==============================
+	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
+
+# end EDA_TOOL_SETTINGS(eda_board_design_boundary_scan)
+# -----------------------------------------------------
 
 # start EDA_TOOL_SETTINGS(eda_timing_analysis)
 # --------------------------------------------
@@ -345,20 +370,8 @@ set_global_assignment -name EDA_TEST_BENCH_NAME testbench_counter_4bit -section_
 # end EDA_TOOL_SETTINGS(eda_board_design_signal_integrity)
 # --------------------------------------------------------
 
-# ---------------------
-# start ENTITY(counter)
-
-# end ENTITY(counter)
-# -------------------
-
-# -------------------------
-# start ENTITY(nru_counter)
-
-# end ENTITY(nru_counter)
 # -----------------------
-
-# ----------------------------
-# start ENTITY(vga_controller)
+# start ENTITY(hello_vga)
 
 	# Fitter Assignments
 	# ==================
@@ -556,25 +569,10 @@ set_global_assignment -name EDA_TEST_BENCH_NAME testbench_counter_4bit -section_
 		set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 		set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 		set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+		set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
 	# end DESIGN_PARTITION(Top)
 	# -------------------------
 
-# end ENTITY(vga_controller)
-# --------------------------
-set_global_assignment -name EDA_TEST_BENCH_NAME testbench_vga_controller -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id testbench_vga_controller
-set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "41921100 ns" -section_id testbench_vga_controller
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME testbench_vga_controller -section_id testbench_vga_controller
-set_global_assignment -name EDA_TEST_BENCH_FILE tb/testbench_counter_4bit.vhd -section_id testbench_counter_4bit
-set_global_assignment -name EDA_TEST_BENCH_FILE tb/testbench_vga_controller.vhd -section_id testbench_vga_controller
-set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
-set_global_assignment -name NUM_PARALLEL_PROCESSORS 8
-set_global_assignment -name VHDL_FILE src/video_memory.vhd
-set_global_assignment -name VHDL_FILE src/utils.vhd
-set_global_assignment -name VHDL_FILE src/vga_controller.vhd
-set_global_assignment -name VHDL_FILE src/hello_vga.vhd
-set_global_assignment -name VHDL_FILE src/counter.vhd
-set_global_assignment -name VHDL_FILE tb/testbench_counter_4bit.vhd
-set_global_assignment -name SDC_FILE "DE10-Lite clock assignments.sdc"
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+# end ENTITY(hello_vga)
+# ---------------------
