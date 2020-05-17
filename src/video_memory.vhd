@@ -32,12 +32,11 @@ entity video_memory is
 end entity;
 
 architecture A of video_memory is
+    constant w : integer := integer(floor(real(HORIZONTAL)/3.0));
 begin
     process (col_addr, row_addr)
         variable r, g, b: std_logic_vector(COLOR_BITNESS-1 downto 0);
-        variable w : integer;
     begin
-        w := integer(floor(real(HORIZONTAL)/3.0));
         if (col_addr < w) then
             r := (others => '1');
             g := (others => '0');
@@ -51,7 +50,6 @@ begin
             g := (others => '0');
             b := (others => '1');
         end if;
-
         RED <= r;
         GREEN <= g;
         BLUE <= b;
