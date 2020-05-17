@@ -28,7 +28,6 @@ entity vga_controller is
         -- inputs
         nreset : in std_logic; -- synchronous reset active low
         clk    : in std_logic; -- pixel clock input
-    --  mem_clk: in std_logic; -- video memory clock ??
 
         -- outputs
         HSYNC : out std_logic; -- horizontal sync
@@ -51,6 +50,32 @@ architecture A of vga_controller is
 
             -- output
             Q : out std_logic_vector(N-1 downto 0) -- N-bit output
+        );
+    end component;
+
+    -- asynchronous video memory
+    component video_memory is
+        generic (
+            -- resolution
+            HORIZONTAL    : integer;
+            VERTICAL      : integer;
+
+            -- color spec
+            COLOR_BITNESS : integer;
+
+            -- address width
+            H_ADDR_WIDTH : integer;
+            V_ADDR_WIDTH : integer
+        );
+        port (
+            -- pixel address inputs
+            col_addr : in std_logic_vector(H_ADDR_WIDTH-1 downto 0);
+            row_addr : in std_logic_vector(V_ADDR_WIDTH-1 downto 0);
+
+            -- outputs
+            RED   : out std_logic_vector(COLOR_BITNESS-1 downto 0); -- red channel
+            GREEN : out std_logic_vector(COLOR_BITNESS-1 downto 0); -- green channel
+            BLUE  : out std_logic_vector(COLOR_BITNESS-1 downto 0)  -- blue channel
         );
     end component;
 
@@ -94,7 +119,14 @@ begin
         generic map (N => row_counter_width)
         port map (nreset => row_reset, clk => row_clock, Q => Q_row);
 
-    -- TODO: video memory
+    -- asynchronous video memory
+    video_mem : video_memory
+        generic map (HORIZONTAL => HORIZONTAL,
+                     VERTICAL => VERTICAL, COLOR_BITNESS => COLOR_BITNESS,
+                     H_ADDR_WIDTH => col_counter_width,
+                     V_ADDR_WIDTH => row_counter_width)
+        port map (col_addr => Q_col, row_addr => Q_row,
+                  RED => RED_tmp, GREEN => GREEN_tmp, BLUE => BLUE_tmp);
 
     -- column counter nreset
     col_reset <= '0' when Q_col >= N_col-1 or nreset='0' else
@@ -105,7 +137,7 @@ begin
                  '1' ;
 
     -- video blanking
-    video_blank <= '0' when Q_col < HORIZONTAL and Q_row < VERTICAL else
+    video_blank <= '0' when nreset='0' or (Q_col < HORIZONTAL and Q_row < VERTICAL) else
                   '1' ;
 
     -- row clock generation process
