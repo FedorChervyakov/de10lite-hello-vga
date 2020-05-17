@@ -1,0 +1,5 @@
+/intel/**
+
+!/intel/*
+!/intel/**/*.vhd
+!/intel/**/*.qip
