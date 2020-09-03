@@ -4,4 +4,4 @@
 !/quartus/*.qsf
 !/quartus/*.sdc
 
-
+!/quartus/Makefile
