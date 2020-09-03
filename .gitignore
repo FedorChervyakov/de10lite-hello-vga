@@ -1,14 +1,7 @@
-/*
+/quartus/*
 
-!/tb/
-!/src/
-!/ip/
+!/quartus/*.qpf
+!/quartus/*.qsf
+!/quartus/*.sdc
 
-!*.qpf
-!*.qsf
 
-!*.sdc
-
-!*.vhd
-
-!README.md
